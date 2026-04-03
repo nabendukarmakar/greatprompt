@@ -1,49 +1,16 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { buildPrompt } from '../../logic/promptBuilder';
 import { Button } from '../common/Button';
-import { Spinner } from '../common/Spinner';
 
-export function PromptOutputStep({ workflowState, updateState, reset, enhancePrompt, workerReady }) {
+export function PromptOutputStep({ workflowState, updateState, reset }) {
   const [displayText, setDisplayText] = useState(workflowState.finalPrompt || '');
-  const [enhancing, setEnhancing]     = useState(false);
   const [copied, setCopied]           = useState(false);
-
-  const generate = useCallback((withEnhance = true) => {
-    const base = buildPrompt(workflowState);
-
-    if (workerReady && withEnhance && enhancePrompt) {
-      setDisplayText('');
-      setEnhancing(true);
-
-      const messages = [
-        {
-          role: 'system',
-          content: 'You are a prompt engineering expert. Rewrite the following prompt to be clearer, more specific, and more effective. Return only the improved prompt.',
-        },
-        { role: 'user', content: base },
-      ];
-
-      let accumulated = '';
-      enhancePrompt(messages, (token, done) => {
-        if (!done) {
-          accumulated += token;
-          setDisplayText(accumulated);
-        } else {
-          setEnhancing(false);
-          const final = accumulated || base;
-          setDisplayText(final);
-          updateState({ finalPrompt: final });
-        }
-      });
-    } else {
-      setDisplayText(base);
-      updateState({ finalPrompt: base });
-    }
-  }, [workflowState, workerReady, enhancePrompt, updateState]);
 
   useEffect(() => {
     if (!workflowState.finalPrompt) {
-      generate(true);
+      const prompt = buildPrompt(workflowState);
+      setDisplayText(prompt);
+      updateState({ finalPrompt: prompt });
     }
   }, []);
 
@@ -58,36 +25,28 @@ export function PromptOutputStep({ workflowState, updateState, reset, enhancePro
   };
 
   const handleRegenerate = () => {
-    updateState({ finalPrompt: '' });
-    generate(true);
+    const prompt = buildPrompt(workflowState);
+    setDisplayText(prompt);
+    updateState({ finalPrompt: prompt });
   };
 
   return (
     <div className="step-container">
-      <h2 className="step-title">Your Enhanced Prompt</h2>
-      <p className="step-subtitle">
-        {enhancing ? 'AI is refining your prompt…' : 'Ready to use. Copy or regenerate.'}
-      </p>
+      <h2 className="step-title">Your Prompt</h2>
+      <p className="step-subtitle">Ready to use. Copy or start over.</p>
 
       <div className="prompt-output-wrap">
-        <span className="prompt-output-label">Enhanced Prompt</span>
+        <span className="prompt-output-label">Generated Prompt</span>
         <div className="prompt-output-box">
-          {enhancing && !displayText ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, color: 'var(--muted)' }}>
-              <Spinner size={14} />
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12 }}>Generating…</span>
-            </div>
-          ) : (
-            <pre className="prompt-output-text">{displayText}</pre>
-          )}
+          <pre className="prompt-output-text">{displayText}</pre>
         </div>
       </div>
 
       <div className="prompt-actions">
-        <Button variant="primary" onClick={handleCopy} disabled={!displayText || enhancing}>
+        <Button variant="primary" onClick={handleCopy} disabled={!displayText}>
           {copied ? '✓ Copied!' : 'Copy'}
         </Button>
-        <Button variant="secondary" onClick={handleRegenerate} disabled={enhancing}>
+        <Button variant="secondary" onClick={handleRegenerate}>
           Regenerate
         </Button>
         <Button variant="ghost" onClick={reset}>

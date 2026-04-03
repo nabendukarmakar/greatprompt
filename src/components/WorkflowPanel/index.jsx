@@ -69,8 +69,6 @@ export function WorkflowPanel({
   updateState,
   reset,
   transcript,
-  enhancePrompt,
-  workerReady,
 }) {
   const { currentStep } = workflowState;
 
@@ -107,8 +105,6 @@ export function WorkflowPanel({
             workflowState={workflowState}
             updateState={updateState}
             reset={reset}
-            enhancePrompt={enhancePrompt}
-            workerReady={workerReady}
           />
         );
       default:

@@ -55,7 +55,7 @@ export function ModelSetupModal({ onDownload, onSkip, progress, modelProgress })
       <div className="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
         <h2 className="modal-title" id="modal-title">Welcome to greatprompt.io</h2>
         <p className="modal-subtitle">
-          Download AI models for local speech-to-text and prompt enhancement.
+          Download the Whisper speech-to-text model for local voice transcription.
           All processing stays 100% in your browser — nothing is sent to any server.{' '}
           <strong style={{ color: 'var(--accent)', fontWeight: 500 }}>
             This is a one-time download per browser.
@@ -68,13 +68,6 @@ export function ModelSetupModal({ onDownload, onSkip, progress, modelProgress })
             name="Whisper Tiny"
             size="~150 MB"
             progress={modelProgress?.whisper}
-            downloading={isDownloading}
-          />
-          <div style={{ height: 1, background: 'var(--border)' }} />
-          <ModelRow
-            name="Qwen 2.5 0.5B"
-            size="~400 MB"
-            progress={modelProgress?.qwen}
             downloading={isDownloading}
           />
         </div>

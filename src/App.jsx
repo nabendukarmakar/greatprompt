@@ -25,7 +25,7 @@ export default function App() {
   const [transcript,  setTranscript]  = useState('');
   const [micToast,    setMicToast]    = useState(null);
 
-  const { workerReady, loadProgress, modelProgress, loadModels, transcribe, enhancePrompt } = useAIWorker();
+  const { workerReady, loadProgress, modelProgress, loadModels, transcribe } = useAIWorker();
   const { isRecording, error: micError, clearError, startRecording, stopRecording } = useAudioRecorder();
   const { workflowState, goToStep, updateState, reset } = useWorkflow();
 
@@ -127,7 +127,6 @@ export default function App() {
           updateState={updateState}
           reset={handleReset}
           transcript={transcript}
-          enhancePrompt={enhancePrompt}
           workerReady={workerReady}
         />
       </div>
